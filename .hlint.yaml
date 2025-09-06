@@ -1,0 +1,8 @@
+- ignore: {name: "Avoid lambda"}
+- ignore: {name: "Eta reduce"}
+- ignore: {name: "Use lambda-case"}
+- ignore: {name: "Use null"}
+- ignore: {name: "Use second"}
+- ignore: {name: "Use const"}
+- ignore: {name: "Use (,)"}
+- ignore: {name: "Use <$>", within: Expr.Parser}

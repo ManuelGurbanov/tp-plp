@@ -1,0 +1,57 @@
+cabal-version:      3.0
+name:               incierticalc
+version:            0.1.0.0
+author:             PLP
+maintainer:         plp-docentes@dc.uba.ar
+build-type:         Simple
+
+common nowarnings
+    ghc-options: -w
+
+library
+    import:           nowarnings
+    default-language: Haskell2010
+    exposed-modules:
+        App
+        Util
+        Histograma
+        Generador
+        Expr
+        Expr.Parser
+    hs-source-dirs:   src
+    build-depends:
+        base,
+        -- Para generar números aleatorios
+        random >= 1.3.1 && < 1.4,
+        normaldistribution >= 1.1.0.3 && < 1.2,
+        -- Para parsear expresiones
+        utf8-string >= 1.0.2 && < 1.1,
+        attoparsec >= 0.14.4 && < 0.15,
+        attoparsec-expr >= 0.1.1.2 && < 0.2,
+        scientific >= 0.3.8.0 && < 0.4,
+
+test-suite incierticalc-test
+    import:           nowarnings
+    default-language: Haskell2010
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test, src
+    main-is:          Main.hs
+    other-modules:
+        App
+        Util
+        Histograma
+        Generador
+        Expr
+        Expr.Parser
+    build-depends:
+        base,
+        -- Para generar números aleatorios
+        random >= 1.3.1 && < 1.4,
+        normaldistribution >= 1.1.0.3 && < 1.2,
+        -- Para parsear expresiones
+        utf8-string >= 1.0.2 && < 1.1,
+        attoparsec >= 0.14.4 && < 0.15,
+        attoparsec-expr >= 0.1.1.2 && < 0.2,
+        scientific >= 0.3.8.0 && < 0.4,
+        -- Para escribir tests
+        HUnit >=1.6.2.0 && <1.7,
