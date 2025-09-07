@@ -36,12 +36,26 @@ vacio n (l, u) = Histograma l distancia (replicate (n+2) 0)
   where distancia = (u-l) / fromIntegral n
 
 -- | Agrega un valor al histograma.
+-- agregar :: Float -> Histograma -> Histograma
+-- agregar x (Histograma inicio tamaño (x:xs))
+
+
 agregar :: Float -> Histograma -> Histograma
-agregar x histograma = actualizarElem indice (+1) histograma
+agregar x (Histograma inicio t casilleros) 
+  | x < inicio                                           = Histograma inicio t (actualizarElem 0 (+1) casilleros)
+  | x >= inicio + t*(fromIntegral (length casilleros)-2) = Histograma inicio t (actualizarElem (fromIntegral (length casilleros) - 1) (+1) casilleros)
+  | otherwise                                            = Histograma inicio t (actualizarElem
+          (foldr (\i rec -> if inicio + t*fromIntegral i <= x && inicio + t*(fromIntegral i+1) > x
+                            then fromIntegral i+1
+                            else rec)
+                 (-1)
+                 [1..length casilleros-1])
+          (+1)
+          casilleros)
 
 -- verificar si no la usamos, cambiarlo
-encontrarIndice :: Float -> Histograma -> Int
-encontrarIndice f (Histograma _ _ l) = foldr  
+indexar :: [a] -> [(a, Int)]
+indexar = flip zip [0..]
 
 -- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
 histograma :: Int -> (Float, Float) -> [Float] -> Histograma
