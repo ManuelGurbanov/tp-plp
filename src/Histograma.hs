@@ -13,19 +13,22 @@ module Histograma
   ( Histograma, -- No se exportan los constructores
     vacio,
     agregar,
-    histograma,
-    Casillero (..),
+   -- histograma,
+   -- Casillero (..),
     casMinimo,
     casMaximo,
     casCantidad,
     casPorcentaje,
-    casilleros,
+    --casilleros,
   )
 where
 
 import Util
+import Data.List
 
 data Histograma = Histograma Float Float [Int]
+--1er float -> inicio del intervalo de la segunda casilla
+--2do ->  tamaño del intervalo de cada casillero
   deriving (Show, Eq)
 
 -- | Inicializa un histograma vacío con @n@ casilleros para representar
@@ -43,27 +46,37 @@ vacio n (l, u) = Histograma l distancia (replicate (n+2) 0)
 agregar :: Float -> Histograma -> Histograma
 agregar x (Histograma inicio t casilleros) 
   | x < inicio                                           = Histograma inicio t (actualizarElem 0 (+1) casilleros)
-  | x >= inicio + t*(fromIntegral (length casilleros)-2) = Histograma inicio t (actualizarElem (fromIntegral (length casilleros) - 1) (+1) casilleros)
+  | x >= inicio + t*(fromIntegral (length casilleros)-1) = Histograma inicio t (actualizarElem (fromIntegral (length casilleros) - 1) (+1) casilleros)
   | otherwise                                            = Histograma inicio t (actualizarElem
           (foldr (\i rec -> if inicio + t*fromIntegral i <= x && inicio + t*(fromIntegral i+1) > x
                             then fromIntegral i+1
                             else rec)
                  (-1)
-                 [1..length casilleros-1])
+                 [0..length casilleros-1])
           (+1)
           casilleros)
+
 
 -- verificar si no la usamos, cambiarlo
 indexar :: [a] -> [(a, Int)]
 indexar = flip zip [0..]
+--encontrarIndice :: Float -> Histograma -> Int
+--encontrarIndice e (Histograma min tam l) = foldr (\(min,max) rec -> 
+--  if (e >= min && e < max)  
+--  then
+--  else (rec + 1)
+--) 0 [(i + kt, i + (k+1)*t) | k <- [0 .. length cs - 3]]
+
 
 -- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
-histograma :: Int -> (Float, Float) -> [Float] -> Histograma
-histograma n r xs = error "COMPLETAR EJERCICIO 5"
-
+--histograma :: Int -> (Float, Float) -> [Float] -> Histograma
+--histograma cantCasilleros (min,max) numerosAagregar = Histograma min (max-min) 
+--                         (foldr (\numeroAagregar rec -> agregar numeroAagregar Histograma min (max,min) rec) (replicate cantCasilleros 0))
+--
 -- | Un `Casillero` representa un casillero del histograma con sus límites, cantidad y porcentaje.
 -- Invariante: Sea @Casillero m1 m2 c p@ entonces @m1 < m2@, @c >= 0@, @0 <= p <= 100@
 data Casillero = Casillero Float Float Int Float
+--                          min  max cant porcentaje
   deriving (Show, Eq)
 
 -- | Mínimo valor del casillero (el límite inferior puede ser @-inf@)
@@ -82,6 +95,16 @@ casCantidad (Casillero _ _ c _) = c
 casPorcentaje :: Casillero -> Float
 casPorcentaje (Casillero _ _ _ p) = p
 
--- | Dado un histograma, devuelve la lista de casilleros con sus límites, cantidad y porcentaje.
-casilleros :: Histograma -> [Casillero]
-casilleros _ = error "COMPLETAR EJERCICIO 6"
+-- -- | Dado un histograma, devuelve la lista de casilleros con sus límites, cantidad y porcentaje.
+-- casilleros :: Histograma -> [Casillero]
+-- casilleros h = casilleros h 0
+--   foldr (\cantCasillaI rec -> (Casillero (minimoC min (length cantXCasilleros - length rec) tam) 
+--                                          (maximoC min (length cantXCasilleros - length rec) tam) 
+--                                           cantCasillaI porcentaje) : rec) 
+--                                           [] cantXCasilleros
+--   where porcentaje = (((sum cantXCasilleros) * cantCasillaI) / 100)
+  
+  -- [Casillero min max cantidad porcentaje]
+
+-- casilleros2 :: Histograma -> [Casillero]
+
