@@ -85,17 +85,13 @@ casPorcentaje (Casillero _ _ _ p) = p
 -- | Dado un histograma, devuelve la lista de casilleros con sus límites, cantidad y porcentaje.
 casilleros :: Histograma -> [Casillero]
 casilleros h = casilleros h 0
-  foldr (\cantCasillaI rec -> (Casillero (minimoC min tam) (maximoC min tam) cantCasillaI porcentaje) : rec) [] cantXCasilleros
+  foldr (\cantCasillaI rec -> (Casillero (minimoC min (length cantXCasilleros - length rec) tam) 
+                                         (maximoC min (length cantXCasilleros - length rec) tam) 
+                                          cantCasillaI porcentaje) : rec) 
+                                          [] cantXCasilleros
   where porcentaje = (((sum cantXCasilleros) * cantCasillaI) / 100)
   
   -- [Casillero min max cantidad porcentaje]
 
-casillerosAux :: Histograma -> Int -> [Casillero]
-casillerosAux Histograma min tam indice cantXCasilleros = 
-  foldr (\cantCasillaI rec -> (Casillero (minimoC min indice tam) (maximoC min indice tam) cantCasillaI porcentaje) : rec) [] cantXCasilleros
-  where porcentaje = (((sum cantXCasilleros) * cantCasillaI) / 100)
-
-
-minimoC :: Int -> Int -> Int
-minimoC 
+casilleros2 :: Histograma -> [Casillero]
 
