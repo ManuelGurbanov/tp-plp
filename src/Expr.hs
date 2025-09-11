@@ -52,10 +52,10 @@ foldExpr fConst fRango fSuma fResta fMult fDiv exp = case exp of
 eval :: Expr -> Gen -> (Float, Gen)
 eval = foldExpr (\a gen -> (a, gen))
                 (\a b gen -> dameUno (a, b) gen)
-                (\ev1 ev2 gen -> (fst (ev1 gen) + fst (ev2 gen), gen))
-                (\ev1 ev2 gen -> (fst (ev1 gen) - fst (ev2 gen), gen))
-                (\ev1 ev2 gen -> (fst (ev1 gen) * fst (ev2 gen), gen))
-                (\ev1 ev2 gen -> (fst (ev1 gen) / fst (ev2 gen), gen))
+                (\ev1 ev2 gen -> (fst (ev1 gen) + fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
+                (\ev1 ev2 gen -> (fst (ev1 gen) - fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
+                (\ev1 ev2 gen -> (fst (ev1 gen) * fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
+                (\ev1 ev2 gen -> (fst (ev1 gen) / fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
 {-
   Dudas sobre este ejercicio:
     Más allá de la declaratividad y legibilidad, ¿es correcto? ¿el generador que devolvemos
