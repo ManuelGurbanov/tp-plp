@@ -19,7 +19,7 @@ module Histograma
     casMaximo,
     casCantidad,
     casPorcentaje,
-    -- casilleros,
+    casilleros,
   )
 where
 
@@ -27,8 +27,6 @@ import Data.List
 import Util
 
 data Histograma = Histograma Float Float [Int]
-  -- 1er float -> inicio del intervalo de la segunda casilla
-  -- 2do ->  tamaño del intervalo de cada casillero
   deriving (Show, Eq)
 
 -- | Ejercicio 3 |
@@ -41,16 +39,8 @@ vacio n (l, u) = Histograma l distancia (replicate (n + 2) 0)
     distancia = (u - l) / fromIntegral n
 
 
--- -- | Ejercicio 4 |
--- -- | Agrega un valor al histograma
--- agregar :: Float -> Histograma -> Histograma
--- agregar x (Histograma inicio t casilleros)
---   | x < inicio = histo (actualizarElem 0 (+1) casilleros)
---   | x >= inicio + t * fromIntegral ultimo = histo (actualizarElem ultimo (+1) casilleros)
---   | otherwise = histo (actualizarElem indice (+1) casilleros)
---   where histo = Histograma inicio t
---         ultimo = length casilleros - 1
---         indice = floor ((x - inicio) /  t) + 1
+-- | Ejercicio 4 |
+-- | Agrega un valor al histograma
 agregar :: Float -> Histograma -> Histograma
 agregar x (Histograma inicio salto casilleros) = Histograma inicio salto (actualizarElem obtenerIndice (+1) casilleros)
   where obtenerIndice = max (min (length casilleros - 1) (floor ((x - inicio)/salto) + 1)) 0
@@ -86,14 +76,9 @@ casPorcentaje (Casillero _ _ _ p) = p
 
 -- | Ejercicio 6 |
 -- | Dado un histograma, devuelve la lista de casilleros con sus límites, cantidad y porcentaje.
--- casilleros :: Histograma -> [Casillero]
--- casilleros h = casilleros h 0
---   foldr (\cantCasillaI rec -> (Casillero (minimoC min (length cantXCasilleros - length rec) tam)
---                                          (maximoC min (length cantXCasilleros - length rec) tam)
---                                           cantCasillaI porcentaje) : rec)
---                                           [] cantXCasilleros
---   where porcentaje = (((sum cantXCasilleros) * cantCasillaI) / 100)
-
--- [Casillero min max cantidad porcentaje]
-
--- casilleros2 :: Histograma -> [Casillero]
+casilleros :: Histograma -> [Casillero]
+casilleros (Histograma inicio salto casillas) = zipWith4 (\min max cant porc -> Casillero min max cant porc) listaMins listaMaxs casillas listaPorcs
+  where listaMins = infinitoNegativo : [inicio, inicio+salto .. inicio + salto * fromIntegral (length casillas - 2)]
+        listaMaxs = [inicio, inicio+salto .. inicio + salto * fromIntegral (length casillas - 2) ] ++ [infinitoPositivo]
+        listaPorcs =  map (\cantCasilleros -> fromIntegral (100 * cantCasilleros) / fromIntegral (sum casillas)) casillas
+-- Preguntar por los dos fromIntegral de listaPorcs

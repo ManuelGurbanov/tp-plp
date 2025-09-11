@@ -1,8 +1,10 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use first" #-}
 module Expr
   ( Expr (..),
     recrExpr,
     foldExpr,
-    eval,
+    -- eval,
     armarHistograma,
     evalHistograma,
     mostrar,
@@ -22,15 +24,53 @@ data Expr
   | Div Expr Expr
   deriving (Show, Eq)
 
--- recrExpr :: ... anotar el tipo ...
-recrExpr = error "COMPLETAR EJERCICIO 7"
 
--- foldExpr :: ... anotar el tipo ...
-foldExpr = error "COMPLETAR EJERCICIO 7"
+-- | Ejercicio 7 |
+recrExpr :: (Float -> b) -> (Float -> Float -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> Expr -> b
+recrExpr fConst fRango fSuma fResta fMult fDiv exp = case exp of
+    Const a -> fConst a
+    Rango a b -> fRango a b
+    Suma expr1 expr2 -> fSuma expr1 (rec expr1) expr2 (rec expr2)
+    Resta expr1 expr2 -> fResta expr1 (rec expr1) expr2 (rec expr2)
+    Mult expr1 expr2 -> fMult expr1 (rec expr1) expr2 (rec expr2)
+    Div expr1 expr2 -> fDiv expr1 (rec expr1) expr2 (rec expr2)
+  where rec = recrExpr fConst fRango fSuma fResta fMult fDiv
 
+foldExpr :: (Float -> b) -> (Float -> Float -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> Expr -> b
+foldExpr fConst fRango fSuma fResta fMult fDiv exp = case exp of
+    Const a -> fConst a
+    Rango a b -> fRango a b
+    Suma expr1 expr2 -> fSuma (rec expr1) (rec expr2)
+    Resta expr1 expr2 -> fResta (rec expr1) (rec expr2)
+    Mult expr1 expr2 -> fMult (rec expr1) (rec expr2)
+    Div expr1 expr2 -> fDiv (rec expr1) (rec expr2)
+  where rec = foldExpr fConst fRango fSuma fResta fMult fDiv
+
+
+-- | Ejercicio 8 |
 -- | Evaluar expresiones dado un generador de números aleatorios
-eval :: Expr -> G Float
-eval = error "COMPLETAR EJERCICIO 8"
+eval :: Expr -> Gen -> (Float, Gen)
+eval = foldExpr (\a gen -> (a, gen))
+                (\a b gen -> dameUno (a, b) gen)
+                (\ev1 ev2 gen -> (fst (ev1 gen) + fst (ev2 gen), gen))
+                (\ev1 ev2 gen -> (fst (ev1 gen) - fst (ev2 gen), gen))
+                (\ev1 ev2 gen -> (fst (ev1 gen) * fst (ev2 gen), gen))
+                (\ev1 ev2 gen -> (fst (ev1 gen) / fst (ev2 gen), gen))
+{-
+  Dudas sobre este ejercicio:
+    Más allá de la declaratividad y legibilidad, ¿es correcto? ¿el generador que devolvemos
+    como segunda coordenada de las funciones de casos recursivos, ¿cambia efectivamente 
+    porque a fin de cuentas el del caso base de Rango cambia?
+-}
+
+
+-- eval (Rango a b) gen = dameUno (a, b) gen
+-- eval (Suma expr1 expr2) gen = (fst ev1 + fst ev2, snd ev2)
+-- eval (Suma expr1 expr2) gen = (fst ev1 + fst ev2, snd ev2)
+-- eval (Suma expr1 expr2) gen = (fst ev1 + fst ev2, snd ev2)
+-- eval (Suma expr1 expr2) gen = (fst ev1 + fst ev2, snd ev2)
+--   where ev1 = eval expr1 gen
+--         ev2 = eval expr2 (snd ev1)
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
