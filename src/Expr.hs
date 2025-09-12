@@ -4,7 +4,7 @@ module Expr
   ( Expr (..),
     recrExpr,
     foldExpr,
-    -- eval,
+    eval,
     armarHistograma,
     evalHistograma,
     mostrar,
@@ -49,34 +49,54 @@ foldExpr fConst fRango fSuma fResta fMult fDiv exp = case exp of
 
 -- | Ejercicio 8 |
 -- | Evaluar expresiones dado un generador de números aleatorios
-eval :: Expr -> Gen -> (Float, Gen)
+eval :: Expr -> G Float
 eval = foldExpr (\a gen -> (a, gen))
                 (\a b gen -> dameUno (a, b) gen)
                 (\ev1 ev2 gen -> (fst (ev1 gen) + fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
                 (\ev1 ev2 gen -> (fst (ev1 gen) - fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
                 (\ev1 ev2 gen -> (fst (ev1 gen) * fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
                 (\ev1 ev2 gen -> (fst (ev1 gen) / fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
-{-
-  Dudas sobre este ejercicio:
-    Más allá de la declaratividad y legibilidad, ¿es correcto? ¿el generador que devolvemos
-    como segunda coordenada de las funciones de casos recursivos, ¿cambia efectivamente 
-    porque a fin de cuentas el del caso base de Rango cambia?
--}
+-- Preguntar declaratividad
 
 
--- eval (Rango a b) gen = dameUno (a, b) gen
--- eval (Suma expr1 expr2) gen = (fst ev1 + fst ev2, snd ev2)
--- eval (Suma expr1 expr2) gen = (fst ev1 + fst ev2, snd ev2)
--- eval (Suma expr1 expr2) gen = (fst ev1 + fst ev2, snd ev2)
--- eval (Suma expr1 expr2) gen = (fst ev1 + fst ev2, snd ev2)
---   where ev1 = eval expr1 gen
---         ev2 = eval expr2 (snd ev1)
-
+-- | Ejercicio 9 |
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
 armarHistograma :: Int -> Int -> G Float -> G Histograma
-armarHistograma m n f g = error "COMPLETAR EJERCICIO 9"
+-- armarHistograma :: Int -> Int -> (Gen -> (Float, Gen)) -> Gen -> (Histograma, Gen)
+armarHistograma m n f g = (histograma m rango muestraFinal, genActualizado)
+  where muestraFinal = fst (muestra f n g)
+        genActualizado = snd (muestra f n g)
+        rango = rango95 muestraFinal
+-- histograma cantCasilleros rango muestra
+-- armarHistograma 4 5 f generador
 
+muestraFinal :: [Float]
+muestraFinal = [4.1584997,5.8865123,2.6494105,3.4751017,3.2767937]
+
+rango :: (Float, Float)
+rango = (1.7163358,6.0621915)
+generador = genNormalConSemilla 6
+f = dameUno (1, 5)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- | Ejercicio 10 |
 -- | @evalHistograma m n e g@ evalúa la expresión @e@ usando el generador @g@ @n@ veces
 -- devuelve un histograma con @m@ casilleros y rango calculado con @rango95@ para abarcar el 95% de confianza de los valores.
 -- @n@ debe ser mayor que 0.

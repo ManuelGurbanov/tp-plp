@@ -50,6 +50,7 @@ agregar x (Histograma inicio salto casilleros) = Histograma inicio salto (actual
 -- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
 histograma :: Int -> (Float, Float) -> [Float] -> Histograma
 histograma cant rango = foldr (\n rec -> agregar n rec) (vacio cant rango)
+-- histograma casilleros rango muestra
 
 
 -- | Un `Casillero` representa un casillero del histograma con sus límites, cantidad y porcentaje.

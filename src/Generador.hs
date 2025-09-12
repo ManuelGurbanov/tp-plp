@@ -103,12 +103,13 @@ dameUno (l, u) g =
    in (medio + s / 1.96 * x, siguienteGen)
 
 -- | Aplica una función múltiples veces a un generador.
-muestra :: G a -> Int -> G [a]
+muestra :: (Gen -> (a, Gen)) -> Int -> G [a]
 muestra _ 0 g = ([], g)
 muestra f n g = (x : xs, sf)
   where
     (x, s1) = f g
     (xs, sf) = muestra f (n - 1) s1
+-- muestra (genInicial -> (, genActualizado)) veces (genPrevio -> (muestra, genFinal))
 
 fromList :: [Float] -> Gen
 fromList [] = error "Fin del generador"
@@ -140,3 +141,12 @@ testRango95 (l, u) n g = rango95 $ fst $ muestra (dameUno (l, u)) n g
 
 -- >>> testRango95 (1, 5) 100000 (genNormalConSemilla 1)
 -- (0.9968296,4.995655)
+
+generador :: Gen
+generador = genNormalConSemilla 6
+
+f :: Gen -> (Float, Gen)
+f = dameUno (1,5)
+
+rango :: (Float, Float)
+rango = rango95 [4.1584997,5.8865123,2.6494105,3.4751017,3.2767937]
