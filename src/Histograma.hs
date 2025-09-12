@@ -29,6 +29,41 @@ import Util
 data Histograma = Histograma Float Float [Int]
   deriving (Show, Eq)
 
+
+
+
+
+
+
+
+
+
+
+-- soy bruno y chequea declaratividad, me parece bien asi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -- | Ejercicio 3 |
 -- | Inicializa un histograma vacío con @n@ casilleros para representar
 -- valores en el rango y 2 casilleros adicionales para los valores fuera del rango.
