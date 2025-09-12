@@ -62,38 +62,20 @@ eval = foldExpr (\a gen -> (a, gen))
 -- | Ejercicio 9 |
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
-armarHistograma :: Int -> Int -> G Float -> G Histograma
--- armarHistograma :: Int -> Int -> (Gen -> (Float, Gen)) -> Gen -> (Histograma, Gen)
+-- armarHistograma :: Int -> Int -> G Float -> G Histograma
+armarHistograma :: Int -> Int -> (Gen -> (Float, Gen)) -> Gen -> (Histograma, Gen)
 armarHistograma m n f g = (histograma m rango muestraFinal, genActualizado)
   where muestraFinal = fst (muestra f n g)
         genActualizado = snd (muestra f n g)
         rango = rango95 muestraFinal
 -- histograma cantCasilleros rango muestra
 -- armarHistograma 4 5 f generador
-
 muestraFinal :: [Float]
 muestraFinal = [4.1584997,5.8865123,2.6494105,3.4751017,3.2767937]
-
 rango :: (Float, Float)
 rango = (1.7163358,6.0621915)
 generador = genNormalConSemilla 6
 f = dameUno (1, 5)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 -- | Ejercicio 10 |
@@ -101,7 +83,8 @@ f = dameUno (1, 5)
 -- devuelve un histograma con @m@ casilleros y rango calculado con @rango95@ para abarcar el 95% de confianza de los valores.
 -- @n@ debe ser mayor que 0.
 evalHistograma :: Int -> Int -> Expr -> G Histograma
-evalHistograma m n expr = error "COMPLETAR EJERCICIO 10"
+evalHistograma m n expr = armarHistograma m n (eval expr) 
+
 
 -- Podemos armar histogramas que muestren las n evaluaciones en m casilleros.
 -- >>> evalHistograma 11 10 (Suma (Rango 1 5) (Rango 100 105)) (genNormalConSemilla 0)
@@ -110,10 +93,21 @@ evalHistograma m n expr = error "COMPLETAR EJERCICIO 10"
 -- >>> evalHistograma 11 10000 (Suma (Rango 1 5) (Rango 100 105)) (genNormalConSemilla 0)
 -- (Histograma 102.273895 0.5878462 [239,288,522,810,1110,1389,1394,1295,1076,793,520,310,254],<Gen>)
 
+
+-- | Ejercicio 11 |
 -- | Mostrar las expresiones, pero evitando algunos paréntesis innecesarios.
 -- En particular queremos evitar paréntesis en sumas y productos anidados.
 mostrar :: Expr -> String
-mostrar = error "COMPLETAR EJERCICIO 11"
+mostrar = recrExpr fConst fRango fSuma fResta fMult fDiv
+  where fConst a = show a
+        fRango a b = show a ++ "~" ++ show b
+
+        fSuma exp1 rec1 exp2 rec2 = maybeParen (constructor exp1 /= CESuma && constructor exp1 /= CERango && constructor exp1 /= CEConst) rec1 ++ " + " ++ maybeParen (constructor exp2 /= CESuma && constructor exp2 /= CERango && constructor exp2 /= CEConst) rec2
+        fMult exp1 rec1 exp2 rec2 = maybeParen (constructor exp1 /= CEMult && constructor exp1 /= CERango && constructor exp1 /= CEConst) rec1 ++ " * " ++ maybeParen (constructor exp2 /= CEMult && constructor exp2 /= CERango && constructor exp2 /= CEConst) rec2        
+        
+        fResta exp1 rec1 exp2 rec2 = maybeParen (constructor exp1 /= CERango && constructor exp1 /= CEConst) rec1 ++ " - " ++ maybeParen (constructor exp2 /= CERango && constructor exp2 /= CEConst) rec2
+        fDiv exp1 rec1 exp2 rec2   = maybeParen (constructor exp1 /= CERango && constructor exp1 /= CEConst)rec1 ++ " / " ++ maybeParen (constructor exp2 /= CERango && constructor exp2 /= CEConst) rec2
+
 
 data ConstructorExpr = CEConst | CERango | CESuma | CEResta | CEMult | CEDiv
   deriving (Show, Eq)
