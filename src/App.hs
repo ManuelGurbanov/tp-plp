@@ -68,7 +68,7 @@ mostrarHistograma h =
     mostrarCasillero :: Casillero -> String
     mostrarCasillero c =
       concat
-        [ Derecha espacioLimites (mostrarLimites c),
+        [ alinearDerecha espacioLimites (mostrarLimites c),
           " |",
           replicate (tamBarra c) '▒',
           if casPorcentaje c == maxPorcentaje
