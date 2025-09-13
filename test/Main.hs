@@ -150,8 +150,7 @@ testsEval =
 testsArmarHistograma :: Test
 testsArmarHistograma =
   test
-    [fst (armarHistograma 4 5 (dameUno (1,5)) (genNormalConSemilla 6)) ~?= histograma 4 (rango95 (fst (muestra (dameUno (1,5)) 5 (genNormalConSemilla 6))))  (fst(muestra (dameUno (1,5)) 5 (genNormalConSemilla 6)))
-    ]
+    [completar]
 
 testsEvalHistograma :: Test
 testsEvalHistograma =

@@ -101,12 +101,17 @@ mostrar :: Expr -> String
 mostrar = recrExpr fConst fRango fSuma fResta fMult fDiv
   where fConst a = show a
         fRango a b = show a ++ "~" ++ show b
+        fSuma exp1 rec1 exp2 rec2  = chequearParentesis CESuma  exp1 rec1 ++ " + " ++ chequearParentesis CESuma  exp2 rec2
+        fResta exp1 rec1 exp2 rec2 = chequearParentesis CEResta exp1 rec1 ++ " - " ++ chequearParentesis CEResta exp2 rec2
+        fMult exp1 rec1 exp2 rec2  = chequearParentesis CEMult  exp1 rec1 ++ " * " ++ chequearParentesis CEMult  exp2 rec2 
+        fDiv exp1 rec1 exp2 rec2   = chequearParentesis CEDiv   exp1 rec1 ++ " / " ++ chequearParentesis CEDiv   exp2 rec2
+              
 
-        fSuma exp1 rec1 exp2 rec2 = maybeParen (constructor exp1 /= CESuma && constructor exp1 /= CERango && constructor exp1 /= CEConst) rec1 ++ " + " ++ maybeParen (constructor exp2 /= CESuma && constructor exp2 /= CERango && constructor exp2 /= CEConst) rec2
-        fMult exp1 rec1 exp2 rec2 = maybeParen (constructor exp1 /= CEMult && constructor exp1 /= CERango && constructor exp1 /= CEConst) rec1 ++ " * " ++ maybeParen (constructor exp2 /= CEMult && constructor exp2 /= CERango && constructor exp2 /= CEConst) rec2        
-        
-        fResta exp1 rec1 exp2 rec2 = maybeParen (constructor exp1 /= CERango && constructor exp1 /= CEConst) rec1 ++ " - " ++ maybeParen (constructor exp2 /= CERango && constructor exp2 /= CEConst) rec2
-        fDiv exp1 rec1 exp2 rec2   = maybeParen (constructor exp1 /= CERango && constructor exp1 /= CEConst)rec1 ++ " / " ++ maybeParen (constructor exp2 /= CERango && constructor exp2 /= CEConst) rec2
+chequearParentesis :: ConstructorExpr -> Expr -> String -> String
+chequearParentesis ce exp = maybeParen (noEsLiteral exp && (not (ce == CESuma || ce == CEMult) || (constructor exp /= ce)))
+
+noEsLiteral :: Expr -> Bool
+noEsLiteral exp = constructor exp /= CERango && constructor exp /= CEConst
 
 
 data ConstructorExpr = CEConst | CERango | CESuma | CEResta | CEMult | CEDiv
