@@ -154,13 +154,15 @@ testsCasilleros =
             ]
     ]
 
+
 testsRecr :: Test
 testsRecr =
-  let
-    in
-  test
-    [ completar
-    ]
+  let hayGemelos = recrExpr (const False) (const (const False)) (\s1 r1 s2 r2 ->  r1 || r2 || s1 == s2) (\s1 r1 s2 r2 ->  r1 || r2 || s1 == s2) (\s1 r1 s2 r2 ->  r1 || r2 || s1 == s2) (\s1 r1 s2 r2 ->  r1 || r2 || s1 == s2)
+  in test
+    -- 2 estructuras son gemelas si estan a la misma altura (son hermanas) y son idénticas 
+    [ hayGemelos (Suma (Const 1) (Const 1)) ~?= True,
+      hayGemelos (Suma (Const 1) (Const 0)) ~?= False]
+
 
 testsFold :: Test
 testsFold =
