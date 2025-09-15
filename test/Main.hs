@@ -187,18 +187,24 @@ testsEval =
       -- el primer rango evalua a 2.7980492 y el segundo a 3.1250308
       fst (eval (Suma (Rango 1 5) (Rango 1 5)) (genNormalConSemilla 0)) ~?= 5.92308,
       -- Tests nuestros
-      fst (eval (Resta (Mult (Const 0) (Const 1)) (Suma (Const 0) (Const 1))) genFijo) ~?= -1.0
+      fst (eval (Resta (Mult (Const 0) (Const 1)) (Suma (Const 0) (Const 1))) genFijo) ~?= -1.0,
+      fst (eval (Div (Mult (Const 0) (Const 1)) (Suma (Const 0) (Const 1))) genFijo) ~?= 0
     ]
 
 testsArmarHistograma :: Test
 testsArmarHistograma =
   test
-    [completar]
+    [ -- Tests nuestros
+      fst (armarHistograma 4 5 (dameUno (1,5)) (genNormalConSemilla 6)) ~?= histograma 4 (1.7163358,6.0621915) [4.1584997,5.8865123,2.6494105,3.4751017,3.2767937],
+      fst (armarHistograma 4 2 (dameUno (1,5)) genFijo) ~?= agregar 3 (agregar 3 (vacio 4 (2,4)))
+    ]
 
 testsEvalHistograma :: Test
 testsEvalHistograma =
   test
-    [completar]
+    [
+      fst (evalHistograma 2 2 (Const 7) genFijo) ~?= agregar 7 (agregar 7 (vacio 2 (6,8)))
+    ]
 
 testsParse :: Test
 testsParse =
