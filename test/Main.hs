@@ -159,9 +159,12 @@ testsRecr :: Test
 testsRecr =
   let hayGemelos = recrExpr (const False) (const (const False)) (\s1 r1 s2 r2 ->  r1 || r2 || s1 == s2) (\s1 r1 s2 r2 ->  r1 || r2 || s1 == s2) (\s1 r1 s2 r2 ->  r1 || r2 || s1 == s2) (\s1 r1 s2 r2 ->  r1 || r2 || s1 == s2)
   in test
-    -- 2 estructuras son gemelas si estan a la misma altura (son hermanas) y son idénticas 
+    -- Dos estructuras son gemelas si son hermanas (subestructuras inmediatas de un mismo constructor) y son idénticas 
     [ hayGemelos (Suma (Const 1) (Const 1)) ~?= True,
-      hayGemelos (Suma (Const 1) (Const 0)) ~?= False]
+      hayGemelos (Suma (Const 1) (Const 0)) ~?= False,
+      hayGemelos (Resta (Mult (Const 0) (Const 1)) (Suma (Const 0) (Const 1))) ~?= False,
+      hayGemelos (Resta (Suma (Const 0) (Const 1)) (Suma (Const 0) (Const 1))) ~?= True
+    ]
 
 
 testsFold :: Test
@@ -183,7 +186,8 @@ testsEval =
       fst (eval (Suma (Rango 1 5) (Const 1)) (genNormalConSemilla 0)) ~?= 3.7980492,
       -- el primer rango evalua a 2.7980492 y el segundo a 3.1250308
       fst (eval (Suma (Rango 1 5) (Rango 1 5)) (genNormalConSemilla 0)) ~?= 5.92308,
-      completar
+      -- Tests nuestros
+      fst (eval (Resta (Mult (Const 0) (Const 1)) (Suma (Const 0) (Const 1))) genFijo) ~?= -1.0
     ]
 
 testsArmarHistograma :: Test
