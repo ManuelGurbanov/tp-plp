@@ -56,7 +56,6 @@ eval = foldExpr (\a gen -> (a, gen))
                 (\ev1 ev2 gen -> (fst (ev1 gen) - fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
                 (\ev1 ev2 gen -> (fst (ev1 gen) * fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
                 (\ev1 ev2 gen -> (fst (ev1 gen) / fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
--- Preguntar declaratividad
 
 
 -- | Ejercicio 9 |
@@ -68,6 +67,8 @@ armarHistograma m n f g = (histograma m rango muestraFinal, genActualizado)
   where muestraFinal = fst (muestra f n g)
         genActualizado = snd (muestra f n g)
         rango = rango95 muestraFinal
+
+        
 -- histograma cantCasilleros rango muestra
 -- armarHistograma 4 5 f generador
 muestraFinal :: [Float]
@@ -109,9 +110,10 @@ mostrar = recrExpr fConst fRango fSuma fResta fMult fDiv
 
 chequearParentesis :: ConstructorExpr -> Expr -> String -> String
 chequearParentesis ce exp = maybeParen (noEsLiteral exp && (not (ce == CESuma || ce == CEMult) || (constructor exp /= ce)))
+  where noEsLiteral exp = constructor exp /= CERango && constructor exp /= CEConst
 
-noEsLiteral :: Expr -> Bool
-noEsLiteral exp = constructor exp /= CERango && constructor exp /= CEConst
+-- noEsLiteral :: Expr -> Bool
+-- noEsLiteral exp = constructor exp /= CERango && constructor exp /= CEConst
 
 
 data ConstructorExpr = CEConst | CERango | CESuma | CEResta | CEMult | CEDiv

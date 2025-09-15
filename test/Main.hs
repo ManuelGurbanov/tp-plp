@@ -41,7 +41,9 @@ testsAlinearDerecha =
   test
     [ alinearDerecha 6 "hola" ~?= "  hola",
       alinearDerecha 10 "incierticalc" ~?= "incierticalc",
-      completar
+      -- Tests nuestros
+      alinearDerecha 10 "" ~?= "          ",
+      alinearDerecha 0 "test" ~?= "test"
     ]
 
 testsActualizarElem :: Test
@@ -49,7 +51,9 @@ testsActualizarElem =
   test
     [ actualizarElem 0 (+ 10) [1, 2, 3] ~?= [11, 2, 3],
       actualizarElem 1 (+ 10) [1, 2, 3] ~?= [1, 12, 3],
-      completar
+      -- Tests nuestros
+      actualizarElem 10 (+ 10) [1, 2, 3] ~?= [1, 2, 3],
+      actualizarElem (-8) (+ 10) [1, 2, 3] ~?= [1, 2, 3]
     ]
 
 testsVacio :: Test
@@ -67,7 +71,14 @@ testsVacio =
               Casillero 4 6 0 0,
               Casillero 6 infinitoPositivo 0 0
             ],
-      completar
+      -- Test nuestro
+      casilleros (vacio 3 (-1, 1))
+        ~?= [ Casillero infinitoNegativo (-1.0) 0 0.0,
+              Casillero (-1.0) (-0.3333333) 0 0.0,
+              Casillero (-0.3333333) 0.33333337 0 0.0,
+              Casillero 0.33333337 1.0 0 0.0,
+              Casillero 1.0 infinitoPositivo 0 0.0
+            ]
     ]
 
 testsAgregar :: Test
@@ -95,14 +106,23 @@ testsAgregar =
                   Casillero 4 6 0 0,
                   Casillero 6 infinitoPositivo 0 0
                 ],
-          completar
+          -- Test nuestro con agregar anidados
+          casilleros (agregar (-1) (agregar 5 h0))
+            ~?= [ Casillero infinitoNegativo 0.0 1 50.0, -- El -1 cae acá y representa el 50% de los elementos agregados
+                  Casillero 0.0 2.0 0 0.0,
+                  Casillero 2.0 4.0 0 0.0,
+                  Casillero 4.0 6.0 1 50.0, -- El 5 cae acá y representa el otro 50% de los elementos agregados
+                  Casillero 6.0 infinitoPositivo 0 0.0
+                ]
         ]
 
 testsHistograma :: Test
 testsHistograma =
   test
     [ histograma 4 (1, 5) [1, 2, 3] ~?= agregar 3 (agregar 2 (agregar 1 (vacio 4 (1, 5)))),
-      completar
+      -- Tests nuestros
+      histograma 3 (0, 6) [-1, 5] ~?= agregar (-1) (agregar 5 (vacio 3 (0, 6))),
+      histograma 1 (-1, 1) [] ~?= vacio 1 (-1,1)
     ]
 
 testsCasilleros :: Test
@@ -122,20 +142,37 @@ testsCasilleros =
               Casillero 4.0 6.0 0 0.0,
               Casillero 6.0 infinitoPositivo 0 0.0
             ],
-      completar
+      -- Test nuestro
+      casilleros (agregar 10 (agregar 10 (agregar 10 (vacio 5 (1,11)))))
+        ~?= [ Casillero infinitoNegativo 1.0 0 0.0,
+              Casillero 1.0 3.0 0 0.0,
+              Casillero 3.0 5.0 0 0.0,
+              Casillero 5.0 7.0 0 0.0,
+              Casillero 7.0 9.0 0 0.0,
+              Casillero 9.0 11.0 3 100.0, -- Todos los elementos cayeron en esta casilla
+              Casillero 11.0 infinitoPositivo 0 0.0
+            ]
     ]
 
 testsRecr :: Test
 testsRecr =
+  let
+    in
   test
     [ completar
     ]
 
 testsFold :: Test
 testsFold =
-  test
-    [ completar
-    ]
+  let cambiarPorOpuestos = foldExpr Const Rango Resta Suma Div Mult
+      cantConstantes = foldExpr (const 1) (const (const 0)) (+) (+) (+) (+)
+    in test
+        [ -- Tests nuestros
+          cambiarPorOpuestos (Suma (Rango 1.0 4.0) (Const 2.0)) ~?= Resta (Rango 1.0 4.0) (Const 2.0),
+          cambiarPorOpuestos (Mult (Resta (Rango 1.0 4.0) (Const 2.0)) (Const 2.0)) ~?= Div (Suma (Rango 1.0 4.0) (Const 2.0)) (Const 2.0),
+          cantConstantes (Resta (Rango 1.0 4.0) (Const 2.0)) ~?= 1,
+          cantConstantes (Div (Resta (Rango 1.0 4.0) (Const 2.0)) (Const 2.0)) ~?= 2
+        ]
 
 testsEval :: Test
 testsEval =
