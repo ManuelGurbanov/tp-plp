@@ -52,10 +52,11 @@ foldExpr fConst fRango fSuma fResta fMult fDiv exp = case exp of
 eval :: Expr -> G Float
 eval = foldExpr (\a gen -> (a, gen))
                 (\a b gen -> dameUno (a, b) gen)
-                (\ev1 ev2 gen -> (fst (ev1 gen) + fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
-                (\ev1 ev2 gen -> (fst (ev1 gen) - fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
-                (\ev1 ev2 gen -> (fst (ev1 gen) * fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
-                (\ev1 ev2 gen -> (fst (ev1 gen) / fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
+                (operar (+))
+                (operar (-))
+                (operar (*))
+                (operar (/))
+       where operar op = (\ev1 ev2 gen -> ( op (fst (ev1 gen)) (fst (ev2 (snd (ev1 gen)))), snd (ev2 (snd (ev1 gen)))))
 
 
 -- | Ejercicio 9 |
@@ -67,16 +68,6 @@ armarHistograma m n f g = (histograma m rango muestraFinal, genActualizado)
   where muestraFinal = fst (muestra f n g)
         genActualizado = snd (muestra f n g)
         rango = rango95 muestraFinal
-
-        
--- histograma cantCasilleros rango muestra
--- armarHistograma 4 5 f generador
-muestraFinal :: [Float]
-muestraFinal = [4.1584997,5.8865123,2.6494105,3.4751017,3.2767937]
-rango :: (Float, Float)
-rango = (1.7163358,6.0621915)
-generador = genNormalConSemilla 6
-f = dameUno (1, 5)
 
 
 -- | Ejercicio 10 |
@@ -99,14 +90,16 @@ evalHistograma m n expr = armarHistograma m n (eval expr)
 -- | Mostrar las expresiones, pero evitando algunos paréntesis innecesarios.
 -- En particular queremos evitar paréntesis en sumas y productos anidados.
 mostrar :: Expr -> String
-mostrar = recrExpr fConst fRango fSuma fResta fMult fDiv
-  where fConst a = show a
-        fRango a b = show a ++ "~" ++ show b
-        fSuma exp1 rec1 exp2 rec2  = chequearParentesis CESuma  exp1 rec1 ++ " + " ++ chequearParentesis CESuma  exp2 rec2
-        fResta exp1 rec1 exp2 rec2 = chequearParentesis CEResta exp1 rec1 ++ " - " ++ chequearParentesis CEResta exp2 rec2
-        fMult exp1 rec1 exp2 rec2  = chequearParentesis CEMult  exp1 rec1 ++ " * " ++ chequearParentesis CEMult  exp2 rec2 
-        fDiv exp1 rec1 exp2 rec2   = chequearParentesis CEDiv   exp1 rec1 ++ " / " ++ chequearParentesis CEDiv   exp2 rec2
-              
+mostrar = recrExpr fConst fRango (mostrarBin CESuma "+")
+                                 (mostrarBin CEResta "-")
+                                 (mostrarBin CEMult "*")
+                                 (mostrarBin CEDiv  "/")
+  where
+    fConst a   = show a
+    fRango a b = show a ++ "~" ++ show b
+    mostrarBin ctor op exp1 rec1 exp2 rec2 =
+      chequearParentesis ctor exp1 rec1 ++ " " ++ op ++ " " ++ chequearParentesis ctor exp2 rec2
+
 
 chequearParentesis :: ConstructorExpr -> Expr -> String -> String
 chequearParentesis ce exp = maybeParen (noEsLiteral exp && (not (ce == CESuma || ce == CEMult) || (constructor exp /= ce)))

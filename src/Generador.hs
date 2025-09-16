@@ -141,12 +141,3 @@ testRango95 (l, u) n g = rango95 $ fst $ muestra (dameUno (l, u)) n g
 
 -- >>> testRango95 (1, 5) 100000 (genNormalConSemilla 1)
 -- (0.9968296,4.995655)
-
-generador :: Gen
-generador = genNormalConSemilla 6
-
-f :: Gen -> (Float, Gen)
-f = dameUno (1,5)
-
-rango :: (Float, Float)
-rango = rango95 [4.1584997,5.8865123,2.6494105,3.4751017,3.2767937]
