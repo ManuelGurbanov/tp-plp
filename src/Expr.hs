@@ -95,9 +95,8 @@ mostrar = recrExpr fConst fRango (mostrarBin CESuma "+")
                                  (mostrarBin CEMult "*")
                                  (mostrarBin CEDiv  "/")
   where
-    fConst a = show a
+    fConst a   = show a
     fRango a b = show a ++ "~" ++ show b
-    
     mostrarBin ctor op exp1 rec1 exp2 rec2 =
       chequearParentesis ctor exp1 rec1 ++ " " ++ op ++ " " ++ chequearParentesis ctor exp2 rec2
 
