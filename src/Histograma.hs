@@ -82,4 +82,3 @@ casilleros (Histograma inicio salto casillas) = zipWith4 (\min max cant porc -> 
   where listaMins = infinitoNegativo : [inicio, inicio+salto .. inicio + salto * fromIntegral (length casillas - 2)]
         listaMaxs = [inicio, inicio+salto .. inicio + salto * fromIntegral (length casillas - 2) ] ++ [infinitoPositivo]
         listaPorcs =  map (\cantCasilleros -> if sum casillas == 0 then 0 else fromIntegral (100 * cantCasilleros) / fromIntegral (sum casillas)) casillas
--- Preguntar por los dos fromIntegral de listaPorcs(!!!!!!!!!!!!!!!!!!!!!!!!!!)
