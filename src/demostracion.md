@@ -60,10 +60,10 @@ Para demostrar que la propiedad vale, nos alcanza con demostrar que valen:
 
         ∀ e1 :: Expr. ∀ e2 :: Expr. ((P(e1) ∧ P(e2)) => P(Div e1 e2))
         
-c. Demostrar los casos correspondientes a los casos base y al constructor Suma. Los demás casos inductivos son an´alogos a este último, y por eso les pedimos que no los escriban para este trabajo práctico. En general en la materia siempre tendrán que escribir todos los casos, aunque sean an´alogos o similares, excepto que les digamos explícitamente que no es necesario.
+c. Demostrar los casos correspondientes a los casos base y al constructor Suma. Los demás casos inductivos son análogos a este último, y por eso les pedimos que no los escriban para este trabajo práctico. En general en la materia siempre tendrán que escribir todos los casos, aunque sean análogos o similares, excepto que les digamos explícitamente que no es necesario.
 
 - Todos los pasos de la demostración deben estar debidamente justificados usando las herramientas que vimos en clase.
-- Pueden asumir el siguiente lema como v´alido. No hace falta demostrarlo:
+- Pueden asumir el siguiente lema como válido. No hace falta demostrarlo:
 
 ```
 {CONMUT} ∀n, m :: Nat · suma n m = suma m n
@@ -108,3 +108,5 @@ cantLit (Suma e1 e2)
 Luego, el caso inductivo sobre el constructor Suma es válido.
 
 Los demás casos inductivos para los constructores Resta, Mult y Div son análogos al de Suma, como lo aclara la consigna.
+
+Conclusión: La propiedad `P(e) ≡ cantLit e = S (cantOp e)` vale ∀e :: Expr.

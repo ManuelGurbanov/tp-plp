@@ -1,14 +1,3 @@
--- | Un `Histograma` es una estructura de datos que permite contar cuántos valores hay en cada rango.
--- @vacio n (a, b)@ devuelve un histograma vacío con n+2 casilleros:
---
--- * @(-inf, a)@
--- * @[a, a + tamIntervalo)@
--- * @[a + tamIntervalo, a + 2*tamIntervalo)@
--- * ...
--- * @[b - tamIntervalo, b)@
--- * @[b, +inf)@
---
--- `vacio`, `agregar` e `histograma` se usan para construir un histograma.
 module Histograma
   ( Histograma, -- No se exportan los constructores
     vacio,
@@ -50,7 +39,6 @@ agregar x (Histograma inicio salto casilleros) = Histograma inicio salto (actual
 -- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
 histograma :: Int -> (Float, Float) -> [Float] -> Histograma
 histograma cant rango = foldr (\n rec -> agregar n rec) (vacio cant rango)
--- histograma casilleros rango muestra
 
 
 -- | Un `Casillero` representa un casillero del histograma con sus límites, cantidad y porcentaje.

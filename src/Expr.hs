@@ -30,35 +30,34 @@ recrExpr :: (Float -> b) -> (Float -> Float -> b) -> (Expr -> b -> Expr -> b -> 
 recrExpr fConst fRango fSuma fResta fMult fDiv exp = case exp of
     Const a           -> fConst a
     Rango a b         -> fRango a b
-    Suma expr1 expr2  -> fSuma expr1 (rec expr1) expr2 (rec expr2)
+    Suma expr1 expr2  -> fSuma  expr1 (rec expr1) expr2 (rec expr2)
     Resta expr1 expr2 -> fResta expr1 (rec expr1) expr2 (rec expr2)
-    Mult expr1 expr2  -> fMult expr1 (rec expr1) expr2 (rec expr2)
-    Div expr1 expr2   -> fDiv expr1 (rec expr1) expr2 (rec expr2)
+    Mult expr1 expr2  -> fMult  expr1 (rec expr1) expr2 (rec expr2)
+    Div expr1 expr2   -> fDiv   expr1 (rec expr1) expr2 (rec expr2)
   where rec = recrExpr fConst fRango fSuma fResta fMult fDiv
 
 foldExpr :: (Float -> b) -> (Float -> Float -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> Expr -> b
 foldExpr fConst fRango fSuma fResta fMult fDiv exp = case exp of
-    Const a           -> fConst a
-    Rango a b         -> fRango a b
-    Suma expr1 expr2  -> fSuma (rec expr1) (rec expr2)
+    Const a           -> fConst  a
+    Rango a b         -> fRango  a b
+    Suma expr1 expr2  -> fSuma  (rec expr1) (rec expr2)
     Resta expr1 expr2 -> fResta (rec expr1) (rec expr2)
-    Mult expr1 expr2  -> fMult (rec expr1) (rec expr2)
-    Div expr1 expr2   -> fDiv (rec expr1) (rec expr2)
+    Mult expr1 expr2  -> fMult  (rec expr1) (rec expr2)
+    Div expr1 expr2   -> fDiv   (rec expr1) (rec expr2)
   where rec = foldExpr fConst fRango fSuma fResta fMult fDiv
 
 
 -- | Ejercicio 8 |
 -- | Evaluar expresiones dado un generador de números aleatorios
 eval :: Expr -> G Float
-eval = foldExpr (\a gen -> (a, gen))
-                (\a b gen -> dameUno (a, b) gen)
-                (operar (+))
-                (operar (-))
-                (operar (*))
-                (operar (/))
-       where operar op = (\ev1 ev2 gen -> 
-                              ( op (fst (ev1 gen)) (fst (ev2 (snd (ev1 gen)))), 
-                                snd (ev2 (snd (ev1 gen)))))
+eval = foldExpr (\a gen       -> (a, gen))
+                (\a b gen     -> dameUno (a, b) gen)
+                (\ev1 ev2 gen -> (fst (ev1 gen) + fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
+                (\ev1 ev2 gen -> (fst (ev1 gen) - fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
+                (\ev1 ev2 gen -> (fst (ev1 gen) * fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
+                (\ev1 ev2 gen -> (fst (ev1 gen) / fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
+-- Vamos hilando el generador actualizado de la evaluación anterior en la siguiente.
+-- Este se encuentra en la segunda coordenada de las respectivas evaluaciones
 
 
 -- | Ejercicio 9 |
@@ -67,9 +66,9 @@ eval = foldExpr (\a gen -> (a, gen))
 -- armarHistograma :: Int -> Int -> G Float -> G Histograma
 armarHistograma :: Int -> Int -> (Gen -> (Float, Gen)) -> Gen -> (Histograma, Gen)
 armarHistograma m n f g = (histograma m rango muestraFinal, genActualizado)
-  where muestraFinal = fst (muestra f n g)
-        genActualizado = snd (muestra f n g)
-        rango = rango95 muestraFinal
+  where muestraFinal    = fst (muestra f n g)
+        genActualizado  = snd (muestra f n g)
+        rango           = rango95 muestraFinal
 
 
 -- | Ejercicio 10 |
@@ -80,17 +79,7 @@ evalHistograma :: Int -> Int -> Expr -> G Histograma
 evalHistograma m n expr = armarHistograma m n (eval expr) 
 
 
--- Podemos armar histogramas que muestren las n evaluaciones en m casilleros.
--- >>> evalHistograma 15 10 (Suma (Rango 1 5) (Rango 100 105)) (genNormalConSemilla 11)
--- (Histograma 102.97217 0.37302858 [0,0,0,2,1,0,2,0,0,0,1,1,2,0,1,0,0],<Gen>)
-
--- >>> evalHistograma 11 10000 (Suma (Rango 1 5) (Rango 100 105)) (genNormalConSemilla 0)
--- (Histograma 102.273895 0.5878462 [239,288,522,810,1110,1389,1394,1295,1076,793,520,310,254],<Gen>)
-
-
 -- | Ejercicio 11 |
--- | Mostrar las expresiones, pero evitando algunos paréntesis innecesarios.
--- En particular queremos evitar paréntesis en sumas y productos anidados.
 mostrar :: Expr -> String
 mostrar = recrExpr fConst fRango (mostrarBin CESuma "+")
                                  (mostrarBin CEResta "-")
@@ -99,16 +88,14 @@ mostrar = recrExpr fConst fRango (mostrarBin CESuma "+")
   where
     fConst a                               = show a
     fRango a b                             = show a ++ "~" ++ show b
-    mostrarBin ctor op exp1 rec1 exp2 rec2 =
-      chequearParentesis ctor exp1 rec1 ++ " " ++ op ++ " " ++ chequearParentesis ctor exp2 rec2
+    mostrarBin ctor op exp1 rec1 exp2 rec2 = chequearParentesis ctor exp1 rec1 ++ " " ++ op ++ " " ++ chequearParentesis ctor exp2 rec2
 
 
 chequearParentesis :: ConstructorExpr -> Expr -> String -> String
 chequearParentesis ce exp = maybeParen (noEsLiteral exp && (not (ce == CESuma || ce == CEMult) || (constructor exp /= ce)))
-  where noEsLiteral exp = constructor exp /= CERango && constructor exp /= CEConst
+  where noEsLiteral exp   = constructor exp /= CERango && constructor exp /= CEConst
+-- No agrega paréntesis en sumas dentro de sumas, ni productos dentro de productos
 
--- noEsLiteral :: Expr -> Bool
--- noEsLiteral exp = constructor exp /= CERango && constructor exp /= CEConst
 
 
 data ConstructorExpr = CEConst | CERango | CESuma | CEResta | CEMult | CEDiv
@@ -116,14 +103,14 @@ data ConstructorExpr = CEConst | CERango | CESuma | CEResta | CEMult | CEDiv
 
 -- | Indica qué constructor fue usado para crear la expresión.
 constructor :: Expr -> ConstructorExpr
-constructor (Const _) = CEConst
+constructor (Const _)   = CEConst
 constructor (Rango _ _) = CERango
-constructor (Suma _ _) = CESuma
+constructor (Suma _ _)  = CESuma
 constructor (Resta _ _) = CEResta
-constructor (Mult _ _) = CEMult
-constructor (Div _ _) = CEDiv
+constructor (Mult _ _)  = CEMult
+constructor (Div _ _)   = CEDiv
 
 -- | Agrega paréntesis antes y después del string si el Bool es True.
 maybeParen :: Bool -> String -> String
-maybeParen True s = "(" ++ s ++ ")"
+maybeParen True s  = "(" ++ s ++ ")"
 maybeParen False s = s
