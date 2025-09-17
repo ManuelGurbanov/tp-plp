@@ -28,22 +28,22 @@ data Expr
 -- | Ejercicio 7 |
 recrExpr :: (Float -> b) -> (Float -> Float -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> (Expr -> b -> Expr -> b -> b) -> Expr -> b
 recrExpr fConst fRango fSuma fResta fMult fDiv exp = case exp of
-    Const a -> fConst a
-    Rango a b -> fRango a b
-    Suma expr1 expr2 -> fSuma expr1 (rec expr1) expr2 (rec expr2)
+    Const a           -> fConst a
+    Rango a b         -> fRango a b
+    Suma expr1 expr2  -> fSuma expr1 (rec expr1) expr2 (rec expr2)
     Resta expr1 expr2 -> fResta expr1 (rec expr1) expr2 (rec expr2)
-    Mult expr1 expr2 -> fMult expr1 (rec expr1) expr2 (rec expr2)
-    Div expr1 expr2 -> fDiv expr1 (rec expr1) expr2 (rec expr2)
+    Mult expr1 expr2  -> fMult expr1 (rec expr1) expr2 (rec expr2)
+    Div expr1 expr2   -> fDiv expr1 (rec expr1) expr2 (rec expr2)
   where rec = recrExpr fConst fRango fSuma fResta fMult fDiv
 
 foldExpr :: (Float -> b) -> (Float -> Float -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> Expr -> b
 foldExpr fConst fRango fSuma fResta fMult fDiv exp = case exp of
-    Const a -> fConst a
-    Rango a b -> fRango a b
-    Suma expr1 expr2 -> fSuma (rec expr1) (rec expr2)
+    Const a           -> fConst a
+    Rango a b         -> fRango a b
+    Suma expr1 expr2  -> fSuma (rec expr1) (rec expr2)
     Resta expr1 expr2 -> fResta (rec expr1) (rec expr2)
-    Mult expr1 expr2 -> fMult (rec expr1) (rec expr2)
-    Div expr1 expr2 -> fDiv (rec expr1) (rec expr2)
+    Mult expr1 expr2  -> fMult (rec expr1) (rec expr2)
+    Div expr1 expr2   -> fDiv (rec expr1) (rec expr2)
   where rec = foldExpr fConst fRango fSuma fResta fMult fDiv
 
 
@@ -56,7 +56,9 @@ eval = foldExpr (\a gen -> (a, gen))
                 (operar (-))
                 (operar (*))
                 (operar (/))
-       where operar op = (\ev1 ev2 gen -> ( op (fst (ev1 gen)) (fst (ev2 (snd (ev1 gen)))), snd (ev2 (snd (ev1 gen)))))
+       where operar op = (\ev1 ev2 gen -> 
+                              ( op (fst (ev1 gen)) (fst (ev2 (snd (ev1 gen)))), 
+                                snd (ev2 (snd (ev1 gen)))))
 
 
 -- | Ejercicio 9 |
@@ -95,8 +97,8 @@ mostrar = recrExpr fConst fRango (mostrarBin CESuma "+")
                                  (mostrarBin CEMult "*")
                                  (mostrarBin CEDiv  "/")
   where
-    fConst a   = show a
-    fRango a b = show a ++ "~" ++ show b
+    fConst a                               = show a
+    fRango a b                             = show a ++ "~" ++ show b
     mostrarBin ctor op exp1 rec1 exp2 rec2 =
       chequearParentesis ctor exp1 rec1 ++ " " ++ op ++ " " ++ chequearParentesis ctor exp2 rec2
 
