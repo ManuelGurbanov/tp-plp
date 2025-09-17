@@ -56,8 +56,17 @@ eval = foldExpr (\a gen       -> (a, gen))
                 (\ev1 ev2 gen -> (fst (ev1 gen) - fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
                 (\ev1 ev2 gen -> (fst (ev1 gen) * fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
                 (\ev1 ev2 gen -> (fst (ev1 gen) / fst (ev2 (snd (ev1 gen))), snd (ev2 (snd (ev1 gen)))))
--- Vamos hilando el generador actualizado de la evaluación anterior en la siguiente.
--- Este se encuentra en la segunda coordenada de las respectivas evaluaciones
+{-
+  Vamos hilando el generador actualizado de la evaluación anterior en la siguiente.
+  Este se encuentra en la segunda coordenada de las respectivas evaluaciones.
+
+  Lo dejamos como lambdas "repetidas" porque nos parece más fácil de comprender que lo único
+  que cambia en los casos de constructores recursivos es la operación matemática en sí.
+  La otra opción era comprimirlo en un where con una función auxiliar a la que
+  le pasamos el operador, pero nos parece que eso es menos legible:
+
+    operar op = (\ev1 ev2 gen -> ( op (fst (ev1 gen)) (fst (ev2 (snd (ev1 gen)))), snd (ev2 (snd (ev1 gen)))))
+-}
 
 
 -- | Ejercicio 9 |
