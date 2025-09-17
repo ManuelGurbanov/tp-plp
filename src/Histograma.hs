@@ -79,6 +79,6 @@ casPorcentaje (Casillero _ _ _ p) = p
 -- | Dado un histograma, devuelve la lista de casilleros con sus límites, cantidad y porcentaje.
 casilleros :: Histograma -> [Casillero]
 casilleros (Histograma inicio salto casillas) = zipWith4 (\min max cant porc -> Casillero min max cant porc) listaMins listaMaxs casillas listaPorcs
-  where listaMins = infinitoNegativo : [inicio, inicio+salto .. inicio + salto * fromIntegral (length casillas - 2)]
-        listaMaxs = [inicio, inicio+salto .. inicio + salto * fromIntegral (length casillas - 2) ] ++ [infinitoPositivo]
+  where listaMins  = infinitoNegativo : [inicio, inicio+salto .. inicio + salto * fromIntegral (length casillas - 2)]
+        listaMaxs  = [inicio, inicio+salto .. inicio + salto * fromIntegral (length casillas - 2) ] ++ [infinitoPositivo]
         listaPorcs =  map (\cantCasilleros -> if sum casillas == 0 then 0 else fromIntegral (100 * cantCasilleros) / fromIntegral (sum casillas)) casillas
