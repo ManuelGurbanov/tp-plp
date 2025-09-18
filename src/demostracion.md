@@ -1,5 +1,27 @@
 # Ejercicio 12 - Demostración
 
+
+
+
+
+
+sacar espeacios aca estoy probando
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Consigna
 Necesitamos demostrar que toda expresión tiene un literal más que su cantidad de operadores. Los literales son las constantes y los rangos. Para esto se dispone de las siguientes definiciones:
 
